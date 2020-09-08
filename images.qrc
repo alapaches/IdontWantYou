@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/stop.ico</file>
+    </qresource>
+</RCC>
