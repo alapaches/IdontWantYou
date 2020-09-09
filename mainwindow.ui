@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>719</width>
-    <height>281</height>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
       <x>10</x>
       <y>10</y>
       <width>461</width>
-      <height>221</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="mouseTracking">
@@ -45,7 +45,7 @@
        <x>10</x>
        <y>20</y>
        <width>441</width>
-       <height>192</height>
+       <height>201</height>
       </rect>
      </property>
     </widget>
@@ -90,16 +90,16 @@
     <property name="geometry">
      <rect>
       <x>480</x>
-      <y>100</y>
+      <y>90</y>
       <width>231</width>
-      <height>121</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="images.qrc">:/images/hp.png</pixmap>
+     <pixmap resource="images.qrc">:/images/kraken.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>

@@ -3,9 +3,7 @@
 
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     RefreshList();
@@ -16,11 +14,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::RefreshList()
+bool MainWindow::RefreshList()
 {
     QFile file(filename);
-    QStringList lines;
     QString match;
+    lines.clear();
     ui->blockedSitesListWidget->clear();
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
@@ -35,12 +33,15 @@ void MainWindow::RefreshList()
             while(it.hasNext()) {
                 QRegularExpressionMatch qre_match = it.next();
                 match = qre_match.captured(1);
-                qDebug() << match;
+//                qDebug() << match;
                 ui->blockedSitesListWidget->addItem(match);
             }
         }
+        ui->blockedSitesListWidget->scrollToBottom();
+        return true;
     } else {
         ui->statusbar->showMessage("Erreur lors de l'ouverture du fichier");
+        return false;
     }
 }
 
@@ -49,32 +50,36 @@ void MainWindow::on_blockButton_clicked()
     ui->statusbar->clearMessage();
     QString sitePrefix = "127.0.0.1 ";
     QString siteToBlock = sitePrefix + ui->siteToBlockLineEdit->text();
-    QString hostFileName = hostDir+QDir::separator()+"hosts";
-    QString backupFileName = qApp->applicationDirPath()+"/hosts.xeno.bck";
-    QFile hostFile(hostFileName);
-    QFile backupFile(backupFileName);
-    ui->blockedSitesListWidget->addItem(ui->siteToBlockLineEdit->text());
-    ui->blockedSitesListWidget->scrollToBottom();
-    if(backupFile.exists()) {
-        backupFile.remove();
-    }
-    hostFile.copy(backupFileName);
-    if(backupFile.open(QIODevice::Append | QIODevice::Text)) {
-        QTextStream stream(&backupFile);
-        stream << Qt::endl << siteToBlock;
-        backupFile.close();
-    }
-    QProcess process;
-    process.setProgram("cmd.exe");
-    process.setArguments({"/C", qApp->applicationDirPath()+"/apply_changes.bat"});
-    process.setWorkingDirectory(qApp->applicationDirPath());
-    process.setStandardOutputFile(QProcess::nullDevice());
-    process.setStandardErrorFile(QProcess::nullDevice());
-    process.start();
-    process.waitForFinished();
-    if(process.exitCode()== 0) {
-        ui->statusbar->showMessage("Site bloqué avec succès !");
-        RefreshList();
+    if(lines.indexOf(siteToBlock) >= 0) {
+        ui->statusbar->showMessage("Site déjà bloqué. Veuillez réessayer svp");
+    } else {
+        QString hostFileName = hostDir+QDir::separator()+"hosts";
+        QString backupFileName = qApp->applicationDirPath()+"/hosts.xeno.bck";
+        QFile hostFile(hostFileName);
+        QFile backupFile(backupFileName);
+        if(backupFile.exists()) {
+            backupFile.remove();
+        }
+        hostFile.copy(backupFileName);
+        if(backupFile.open(QIODevice::Append | QIODevice::Text)) {
+            QTextStream stream(&backupFile);
+            stream << Qt::endl << siteToBlock;
+            backupFile.close();
+        }
+        QProcess process;
+        process.setProgram("cmd.exe");
+        process.setArguments({"/C", qApp->applicationDirPath()+"/apply_changes.bat"});
+        process.setWorkingDirectory(qApp->applicationDirPath());
+        process.setStandardOutputFile(QProcess::nullDevice());
+        process.setStandardErrorFile(QProcess::nullDevice());
+        process.start();
+        process.waitForFinished();
+        if(process.exitCode()== 0) {
+            ui->siteToBlockLineEdit->clear();
+            Sleep(1000);
+            ui->statusbar->showMessage("Site bloqué avec succès !");
+            RefreshList();
+        }
     }
 }
 
@@ -102,12 +107,17 @@ void MainWindow::on_actionAdministrateur_triggered()
 
 void MainWindow::on_actionReset_triggered()
 {
-    QProcess process;
-    process.setProgram("cmd.exe");
-    process.setArguments({"/C", qApp->applicationDirPath()+"/flush.bat"});
-    process.setWorkingDirectory(qApp->applicationDirPath());
-    process.setStandardOutputFile(QProcess::nullDevice());
-    process.setStandardErrorFile(QProcess::nullDevice());
-    process.startDetached();
-    process.waitForFinished(true);
+    QProcess clearProcess;
+    clearProcess.setProgram("cmd.exe");
+    clearProcess.setArguments({"/C", qApp->applicationDirPath()+"/flush.bat"});
+    clearProcess.setWorkingDirectory(qApp->applicationDirPath());
+    clearProcess.setStandardOutputFile(QProcess::nullDevice());
+    clearProcess.setStandardErrorFile(QProcess::nullDevice());
+    clearProcess.start();
+    clearProcess.waitForFinished();
+    if(clearProcess.exitCode()== 0) {
+        Sleep(1000);
+        ui->statusbar->showMessage("Réinitialisation Réussie !");
+        RefreshList();
+    }
 }

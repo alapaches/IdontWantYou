@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void RefreshList();
+    bool RefreshList();
 
 private slots:
     void on_blockButton_clicked();
@@ -42,6 +42,7 @@ private:
     Ui::MainWindow *ui;
     QString hostDir = "C:/Windows/System32/drivers/etc";
     QString filename="C:\\Windows\\System32\\drivers\\etc\\hosts";
+    QStringList lines;
 
     QString backup="C:\\Windows\\System32\\drivers\\etc\\hosts.xeno.bck";
 

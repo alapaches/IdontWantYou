@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>images/stop.ico</file>
         <file>images/hp.png</file>
+        <file>images/kraken.png</file>
     </qresource>
 </RCC>
