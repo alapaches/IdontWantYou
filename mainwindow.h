@@ -12,6 +12,8 @@
 #include <QDir>
 #include <QSettings>
 #include <QProcess>
+#include <QVBoxLayout>
+#include <QDialog>
 #include "qt_windows.h"
 #include "qwindowdefs_win.h"
 #include <shellapi.h>
@@ -27,9 +29,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void RefreshList();
 
 private slots:
     void on_blockButton_clicked();
+
+    void on_actionAdministrateur_triggered();
+
+    void on_actionReset_triggered();
 
 private:
     Ui::MainWindow *ui;

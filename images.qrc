@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>images/stop.ico</file>
+        <file>images/hp.png</file>
     </qresource>
 </RCC>
